@@ -1,69 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Tpingzy Stats Lab</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-body { background:#0a0a0f; color:#fff; font-family:Arial; text-align:center; }
-h1 { color:#9b5cff; }
-.card {
-  background:#1a1a2e;
-  padding:15px;
-  margin:10px;
-  border-radius:10px;
-  display:inline-block;
-  width:150px;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>Tpingzy Stats Lab</title>
+  <style>
+    body {
+      background: #0a0a0a;
+      color: #00ffcc;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      font-size: 32px;
+    }
+    .quote {
+      color: #aaa;
+      margin-bottom: 30px;
+    }
+    .card {
+      background: #111;
+      padding: 20px;
+      margin: 10px;
+      border-radius: 15px;
+      display: inline-block;
+      width: 120px;
+    }
+    .big {
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .games {
+      margin-top: 30px;
+      color: #fff;
+    }
+  </style>
 </head>
-
 <body>
 
 <h1>🦄 Tpingzy Stats Lab</h1>
-<p>"Who the f*** is Tingus Pingus?"</p>
+<div class="quote">"Who the f*** is Tingus Pingus?"</div>
 
-<div id="stats"></div>
+<div class="card">
+  🔥 Points
+  <div id="pts" class="big">-</div>
+</div>
 
-<h2>📊 Last 5 Games</h2>
-<div id="games"></div>
+<div class="card">
+  🗼 Rebounds
+  <div id="reb" class="big">-</div>
+</div>
 
-<canvas id="chart" width="400" height="200"></canvas>
+<div class="card">
+  🎯 Assists
+  <div id="ast" class="big">-</div>
+</div>
+
+<div class="card">
+  ❌ Blocks
+  <div id="blk" class="big">-</div>
+</div>
+
+<div class="games">
+  <h2>📊 Last 5 Games</h2>
+  <div id="games">Loading...</div>
+</div>
 
 <script>
-async function loadData() {
-  const res = await fetch("stats.json");
-  const data = await res.json();
+// 最新一場
+fetch("https://www.balldontlie.io/api/v1/stats?player_ids[]=322&per_page=1")
+  .then(res => res.json())
+  .then(data => {
+    const game = data.data[0];
 
-  // 主數據
-  document.getElementById("stats").innerHTML = `
-    <div class="card">🔥 Points<br>${data.pts}</div>
-    <div class="card">🗼 Rebounds<br>${data.reb}</div>
-    <div class="card">🎯 Assists<br>${data.ast}</div>
-    <div class="card">❌ Blocks<br>${data.blk}</div>
-  `;
-
-  // 真最近5場
-  const games = data.games;
-
-  document.getElementById("games").innerHTML =
-    games.map((g,i) => `<div class="card">Game ${i+1}<br>${g} PTS</div>`).join("");
-
-  // 圖表
-  new Chart(document.getElementById("chart"), {
-    type: 'line',
-    data: {
-      labels: ["G1","G2","G3","G4","G5"],
-      datasets: [{
-        label: "Points Trend",
-        data: games
-      }]
-    }
+    document.getElementById("pts").innerText = game.pts;
+    document.getElementById("reb").innerText = game.reb;
+    document.getElementById("ast").innerText = game.ast;
+    document.getElementById("blk").innerText = game.blk;
+  })
+  .catch(() => {
+    document.getElementById("pts").innerText = "Error";
   });
-}
 
-loadData();
+// 最近5場
+fetch("https://www.balldontlie.io/api/v1/stats?player_ids[]=322&per_page=5")
+  .then(res => res.json())
+  .then(data => {
+    const games = data.data.map(g => g.pts);
+    document.getElementById("games").innerText = games.join(" / ");
+  })
+  .catch(() => {
+    document.getElementById("games").innerText = "Error loading games";
+  });
+
 </script>
 
 </body>
