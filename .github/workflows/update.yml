@@ -1,4 +1,4 @@
-name: Update KP Real Stats
+name: Update KP Full Stats
 
 on:
   schedule:
@@ -12,23 +12,30 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Fetch real stats
+      - name: Fetch data
         run: |
           curl "https://www.balldontlie.io/api/v1/stats?player_ids[]=322&per_page=5" > raw.json
 
-      - name: Convert data
+      - name: Build JSON
         run: |
           pts=$(jq '[.data[].pts] | add' raw.json)
           reb=$(jq '[.data[].reb] | add' raw.json)
           ast=$(jq '[.data[].ast] | add' raw.json)
           blk=$(jq '[.data[].blk] | add' raw.json)
 
+          g1=$(jq '.data[0].pts' raw.json)
+          g2=$(jq '.data[1].pts' raw.json)
+          g3=$(jq '.data[2].pts' raw.json)
+          g4=$(jq '.data[3].pts' raw.json)
+          g5=$(jq '.data[4].pts' raw.json)
+
           echo "{
             \"name\": \"Kristaps Porzingis\",
             \"pts\": $pts,
             \"reb\": $reb,
             \"ast\": $ast,
-            \"blk\": $blk
+            \"blk\": $blk,
+            \"games\": [$g1,$g2,$g3,$g4,$g5]
           }" > stats.json
 
       - name: Commit
@@ -36,5 +43,5 @@ jobs:
           git config --global user.name "bot"
           git config --global user.email "bot@bot.com"
           git add stats.json
-          git commit -m "update real stats" || echo "no change"
+          git commit -m "update full stats" || echo "no change"
           git push
