@@ -1,6 +1,8 @@
-name: Update KP Stats
+name: Update KP Real Stats
 
 on:
+  schedule:
+    - cron: "0 12 * * *"
   workflow_dispatch:
 
 jobs:
@@ -10,20 +12,29 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Update stats
+      - name: Fetch real stats
         run: |
-          echo '{
-            "name": "Kristaps Porzingis",
-            "pts": '$((RANDOM%30+10))',
-            "reb": '$((RANDOM%10+3))',
-            "ast": '$((RANDOM%5+1))',
-            "blk": '$((RANDOM%4))
-          }' > stats.json
+          curl "https://www.balldontlie.io/api/v1/stats?player_ids[]=322&per_page=5" > raw.json
+
+      - name: Convert data
+        run: |
+          pts=$(jq '[.data[].pts] | add' raw.json)
+          reb=$(jq '[.data[].reb] | add' raw.json)
+          ast=$(jq '[.data[].ast] | add' raw.json)
+          blk=$(jq '[.data[].blk] | add' raw.json)
+
+          echo "{
+            \"name\": \"Kristaps Porzingis\",
+            \"pts\": $pts,
+            \"reb\": $reb,
+            \"ast\": $ast,
+            \"blk\": $blk
+          }" > stats.json
 
       - name: Commit
         run: |
           git config --global user.name "bot"
           git config --global user.email "bot@bot.com"
           git add stats.json
-          git commit -m "update" || echo "no change"
+          git commit -m "update real stats" || echo "no change"
           git push
