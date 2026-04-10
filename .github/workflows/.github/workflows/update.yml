@@ -1,0 +1,32 @@
+name: Update KP Stats
+
+on:
+  schedule:
+    - cron: "0 12 * * *"   # 每日更新（UTC時間）
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Generate new stats
+        run: |
+          echo '{
+            "name": "Kristaps Porzingis",
+            "pts": '$((RANDOM%30+10))',
+            "reb": '$((RANDOM%10+3))',
+            "ast": '$((RANDOM%5+1))',
+            "blk": '$((RANDOM%4))
+          }' > stats.json
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "tpingzy-bot"
+          git config --global user.email "bot@tpingzy.com"
+          git add stats.json
+          git commit -m "Auto update stats" || echo "No changes"
+          git push
