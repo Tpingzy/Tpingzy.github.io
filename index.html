@@ -1,30 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Tpingzy Stats Lab</title>
+<meta charset="UTF-8">
+<title>Tpingzy Stats Lab</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <style>
-    body {
-      background: #0a0a0f;
-      color: #fff;
-      font-family: Arial;
-      text-align: center;
-    }
-
-    h1 {
-      color: #9b5cff;
-    }
-
-    .card {
-      background: #1a1a2e;
-      padding: 20px;
-      margin: 10px;
-      border-radius: 15px;
-      display: inline-block;
-      width: 160px;
-    }
-  </style>
+<style>
+body { background:#0a0a0f; color:#fff; font-family:Arial; text-align:center; }
+h1 { color:#9b5cff; }
+.card {
+  background:#1a1a2e;
+  padding:15px;
+  margin:10px;
+  border-radius:10px;
+  display:inline-block;
+  width:150px;
+}
+</style>
 </head>
 
 <body>
@@ -32,7 +24,12 @@
 <h1>🦄 Tpingzy Stats Lab</h1>
 <p>"Who the f*** is Tingus Pingus?"</p>
 
-<div id="stats">Loading...</div>
+<div id="stats"></div>
+
+<h2>📊 Last Games</h2>
+<div id="games"></div>
+
+<canvas id="chart" width="400" height="200"></canvas>
 
 <script>
 async function loadData() {
@@ -45,6 +42,23 @@ async function loadData() {
     <div class="card">🎯 Assists<br>${data.ast}</div>
     <div class="card">❌ Blocks<br>${data.blk}</div>
   `;
+
+  // 模擬最近5場（之後我會幫你接真數據）
+  const games = [28,18,31,22,15];
+
+  document.getElementById("games").innerHTML =
+    games.map(g => `<div class="card">${g} PTS</div>`).join("");
+
+  new Chart(document.getElementById("chart"), {
+    type: 'line',
+    data: {
+      labels: ["G1","G2","G3","G4","G5"],
+      datasets: [{
+        label: "Points Trend",
+        data: games
+      }]
+    }
+  });
 }
 
 loadData();
