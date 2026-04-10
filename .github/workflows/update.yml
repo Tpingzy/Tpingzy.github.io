@@ -10,13 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Fetch data
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Fetch KP data
         run: |
           curl "https://www.balldontlie.io/api/v1/stats?player_ids[]=322&per_page=5" > raw.json
 
-      - name: Build JSON
+      - name: Process data
         run: |
           pts=$(jq '[.data[].pts] | add' raw.json)
           reb=$(jq '[.data[].reb] | add' raw.json)
@@ -38,10 +42,10 @@ jobs:
             \"games\": [$g1,$g2,$g3,$g4,$g5]
           }" > stats.json
 
-      - name: Commit
+      - name: Commit & Push
         run: |
-          git config --global user.name "bot"
-          git config --global user.email "bot@bot.com"
+          git config --global user.name "tpingzy-bot"
+          git config --global user.email "bot@tpingzy.com"
           git add stats.json
-          git commit -m "update full stats" || echo "no change"
+          git commit -m "update full stats" || echo "no changes"
           git push
