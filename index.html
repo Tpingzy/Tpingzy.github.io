@@ -23,7 +23,7 @@
       margin: 10px;
       border-radius: 15px;
       display: inline-block;
-      width: 150px;
+      width: 160px;
     }
   </style>
 </head>
@@ -40,40 +40,28 @@
 <script>
 async function loadData() {
   try {
-    const res = await fetch("https://www.balldontlie.io/api/v1/stats?player_ids[]=322&per_page=10");
-    const data = await res.json();
-
-    if (!data.data || data.data.length === 0) {
-      document.getElementById("stats").innerHTML = "❌ 無法載入數據（API可能限制）";
-      return;
-    }
-
-    let totalPoints = 0;
-    let games = [];
-
-    data.data.forEach(game => {
-      totalPoints += game.pts;
-      games.push(game.pts);
-    });
+    const res = await fetch("https://www.balldontlie.io/v1/players/322");
+    const player = await res.json();
 
     document.getElementById("stats").innerHTML = `
-      <div class="card">🔥 Last Game<br>${games[0]} PTS</div>
-      <div class="card">📊 Last 10 Total<br>${totalPoints}</div>
+      <div class="card">👤 Player<br>${player.first_name} ${player.last_name}</div>
+      <div class="card">📏 Height<br>${player.height_feet || '-'} ft</div>
+      <div class="card">🏀 Position<br>${player.position || '-'}</div>
     `;
 
     new Chart(document.getElementById("chart"), {
-      type: 'line',
+      type: 'bar',
       data: {
-        labels: games.map((_, i) => "Game " + (i+1)),
+        labels: ["PTS", "REB", "AST"],
         datasets: [{
-          label: "Points",
-          data: games
+          label: "Sample Stats",
+          data: [20, 8, 2]
         }]
       }
     });
 
   } catch (err) {
-    document.getElementById("stats").innerHTML = "❌ Error loading data";
+    document.getElementById("stats").innerHTML = "❌ API blocked（免費API限制）";
   }
 }
 
