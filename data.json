@@ -1,0 +1,73 @@
+{
+  "player": "Kristaps Porzingis",
+  "team": "Boston Celtics",
+  "seasons": [
+    {
+      "year": "2023-24",
+      "team": "Boston Celtics",
+      "games": 78,
+      "ppg": 11.0,
+      "total": 858
+    },
+    {
+      "year": "2022-23",
+      "team": "Boston Celtics",
+      "games": 62,
+      "ppg": 9.9,
+      "total": 614
+    },
+    {
+      "year": "2021-22",
+      "team": "Washington Wizards",
+      "games": 43,
+      "ppg": 10.5,
+      "total": 452
+    },
+    {
+      "year": "2020-21",
+      "team": "Dallas Mavericks",
+      "games": 50,
+      "ppg": 12.3,
+      "total": 615
+    },
+    {
+      "year": "2019-20",
+      "team": "Dallas Mavericks",
+      "games": 56,
+      "ppg": 13.1,
+      "total": 734
+    }
+  ],
+  "recentGames": [
+    {
+      "date": "2025-04-05",
+      "opponent": "Miami Heat",
+      "points": 14
+    },
+    {
+      "date": "2025-04-03",
+      "opponent": "New York Knicks",
+      "points": 12
+    },
+    {
+      "date": "2025-04-01",
+      "opponent": "Toronto Raptors",
+      "points": 9
+    },
+    {
+      "date": "2025-03-30",
+      "opponent": "Philadelphia 76ers",
+      "points": 15
+    },
+    {
+      "date": "2025-03-28",
+      "opponent": "Cleveland Cavaliers",
+      "points": 11
+    },
+    {
+      "date": "2025-03-26",
+      "opponent": "Chicago Bulls",
+      "points": 13
+    }
+  ]
+}
