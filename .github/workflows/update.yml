@@ -1,8 +1,6 @@
 name: Update KP Stats
 
 on:
-  schedule:
-    - cron: "0 12 * * *"   # 每日更新（UTC時間）
   workflow_dispatch:
 
 jobs:
@@ -10,10 +8,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Generate new stats
+      - name: Update stats
         run: |
           echo '{
             "name": "Kristaps Porzingis",
@@ -23,10 +20,10 @@ jobs:
             "blk": '$((RANDOM%4))
           }' > stats.json
 
-      - name: Commit changes
+      - name: Commit
         run: |
-          git config --global user.name "tpingzy-bot"
-          git config --global user.email "bot@tpingzy.com"
+          git config --global user.name "bot"
+          git config --global user.email "bot@bot.com"
           git add stats.json
-          git commit -m "Auto update stats" || echo "No changes"
+          git commit -m "update" || echo "no change"
           git push
