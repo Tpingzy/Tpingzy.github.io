@@ -26,7 +26,7 @@ h1 { color:#9b5cff; }
 
 <div id="stats"></div>
 
-<h2>📊 Last Games</h2>
+<h2>📊 Last 5 Games</h2>
 <div id="games"></div>
 
 <canvas id="chart" width="400" height="200"></canvas>
@@ -36,6 +36,7 @@ async function loadData() {
   const res = await fetch("stats.json");
   const data = await res.json();
 
+  // 主數據
   document.getElementById("stats").innerHTML = `
     <div class="card">🔥 Points<br>${data.pts}</div>
     <div class="card">🗼 Rebounds<br>${data.reb}</div>
@@ -43,12 +44,13 @@ async function loadData() {
     <div class="card">❌ Blocks<br>${data.blk}</div>
   `;
 
-  // 模擬最近5場（之後我會幫你接真數據）
-  const games = [28,18,31,22,15];
+  // 真最近5場
+  const games = data.games;
 
   document.getElementById("games").innerHTML =
-    games.map(g => `<div class="card">${g} PTS</div>`).join("");
+    games.map((g,i) => `<div class="card">Game ${i+1}<br>${g} PTS</div>`).join("");
 
+  // 圖表
   new Chart(document.getElementById("chart"), {
     type: 'line',
     data: {
