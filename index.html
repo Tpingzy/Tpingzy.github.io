@@ -93,7 +93,7 @@
     <script>
         async function loadStats() {
             try {
-                // 加上時間戳防止緩存
+                // 加上時間戳防止緩存，確保讀到最新 data.json
                 const response = await fetch('data.json?t=' + new Date().getTime());
                 if (!response.ok) throw new Error("搵唔到數據檔");
                 
@@ -104,13 +104,19 @@
                     throw new Error("數據內容係空的");
                 }
 
-                // 直接顯示生涯總計數據
-                document.getElementById('pts').innerText = s.pts || "0";
-                document.getElementById('reb').innerText = s.reb || "0";
-                document.getElementById('blk').innerText = s.blk || "0";
-                document.getElementById('gp').innerText = s.games_played || "0";
-                document.getElementById('ast').innerText = s.ast || "0";
-                document.getElementById('fg').innerText = s.fg_pct ? (s.fg_pct * 100).toFixed(1) + "%" : "--";
+                // 修正對應 API 的 Key 名稱
+                document.getElementById('pts').innerText = s.pts !== undefined ? s.pts : "--";
+                document.getElementById('reb').innerText = s.reb !== undefined ? s.reb : "--";
+                document.getElementById('blk').innerText = s.blk !== undefined ? s.blk : "--";
+                document.getElementById('gp').innerText = s.games_played !== undefined ? s.games_played : "--";
+                document.getElementById('ast').innerText = s.ast !== undefined ? s.ast : "--";
+                
+                // FG% 轉換為百分比格式
+                if (s.fg_pct) {
+                    document.getElementById('fg').innerText = (s.fg_pct * 100).toFixed(1) + "%";
+                } else {
+                    document.getElementById('fg').innerText = "--";
+                }
 
                 // 更新時間
                 if (data.last_updated) {
