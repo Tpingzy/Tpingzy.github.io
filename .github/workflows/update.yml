@@ -2,7 +2,7 @@ name: Update Tingus Pingus Stats
 
 on:
   schedule:
-    - cron: '0 8 * * *' # 每日 UTC 8:00 執行
+    - cron: '0 8 * * *'
   workflow_dispatch: 
 
 jobs:
@@ -13,26 +13,22 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.11'
 
       - name: Install Dependencies
-        # 移除了 nba_api 同 pandas，因為用 balldontlie API 只需要 requests，咁樣行得仲快
         run: pip install requests
 
       - name: Run Python Script
-        # ⚠️ 確保你個 Python 檔案名真係叫 update_stats.py
         run: python update_stats.py
 
-      - name: Commit and Push changes
+      - name: Commit and Push
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          # 改用 git add . 確保就算檔案係新開嘅都捉到
-          git add .
-          # 加入判斷：如果有嘢變先 commit，無變就唔做，咁樣最穩陣
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update Tingus Pingus stats 🦄" && git push)
+          git add data.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update KP Career Totals 🦄" && git push)
