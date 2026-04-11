@@ -1,11 +1,12 @@
 import json
-from nba_api.stats.endpoints import playercareerstats, playergamelog
+import time
 import datetime
+from nba_api.stats.endpoints import playercareerstats, playergamelog
+from requests.exceptions import ReadTimeout
 
 # Kristaps Porzingis NBA Player ID
 PLAYER_ID = '204001'
 
-# ⚠️ 加入偽裝 Header，扮成普通瀏覽器，防止 NBA Server Block 咗 GitHub Actions
 custom_headers = {
     'Host': 'stats.nba.com',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
@@ -13,20 +14,40 @@ custom_headers = {
     'Accept-Language': 'en-US,en;q=0.5',
     'Accept-Encoding': 'gzip, deflate, br',
     'Connection': 'keep-alive',
+    'Referer': 'https://www.nba.com/' # 建議多加一個 Referer 增加真實性
 }
+
+def fetch_with_retry(endpoint_class, max_retries=3, **kwargs):
+    """加入重試機制的 API 請求函式"""
+    for attempt in range(max_retries):
+        try:
+            return endpoint_class(**kwargs)
+        except ReadTimeout:
+            print(f"⚠️ 連線逾時 (嘗試 {attempt + 1}/{max_retries})，等待 5 秒後重試...")
+            time.sleep(5)
+            if attempt == max_retries - 1:
+                raise
 
 def update_data():
     try:
         print("連線至 NBA 伺服器獲取生涯數據...")
-        # 加上 headers 同埋 timeout=60
-        career = playercareerstats.PlayerCareerStats(player_id=PLAYER_ID, headers=custom_headers, timeout=60)
+        career = fetch_with_retry(
+            playercareerstats.PlayerCareerStats, 
+            player_id=PLAYER_ID, 
+            headers=custom_headers, 
+            timeout=30 # 縮短 timeout，提早觸發重試
+        )
         career_df = career.get_data_frames()[0]
         career_totals = career.get_data_frames()[1]
-
         latest_season = career_df.iloc[-1]
         
         print("連線至 NBA 伺服器獲取最近比賽數據...")
-        gamelog = playergamelog.PlayerGameLog(player_id=PLAYER_ID, headers=custom_headers, timeout=60)
+        gamelog = fetch_with_retry(
+            playergamelog.PlayerGameLog, 
+            player_id=PLAYER_ID, 
+            headers=custom_headers, 
+            timeout=30
+        )
         gamelog_df = gamelog.get_data_frames()[0]
         latest_game = gamelog_df.iloc[0]
 
