@@ -67,21 +67,4 @@ def update_data():
         raise e
 
 if __name__ == "__main__":
-    update_data()           "blk": round(latest_season['BLK'] / latest_season['GP'], 1),
-            "fg3_pct": round(latest_season['FG3_PCT'] * 100, 1)
-        },
-        "career": {
-            "games_played": int(career_totals['GP'].iloc[0]),
-            "pts_avg": round(career_totals['PTS'].iloc[0] / career_totals['GP'].iloc[0], 1),
-            "reb_avg": round(career_totals['REB'].iloc[0] / career_totals['GP'].iloc[0], 1),
-            "blk_avg": round(career_totals['BLK'].iloc[0] / career_totals['GP'].iloc[0], 1),
-            "total_pts": int(career_totals['PTS'].iloc[0])
-        }
-    }
-
-    # 4. Save to JSON
-    with open('data.json', 'w') as f:
-        json.dump(data, f, indent=4)
-
-if __name__ == "__main__":
     update_data()
