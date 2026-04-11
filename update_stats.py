@@ -1,91 +1,64 @@
+import requests
 import json
-import time
 import datetime
-from nba_api.stats.endpoints import playercareerstats, playergamelog
-from requests.exceptions import ReadTimeout
+import time
 
-# Kristaps Porzingis NBA Player ID
-PLAYER_ID = '204001'
+# 你的 API Key
+API_KEY = "e110dcd6-cfe8-4714-a179-f517f3e364fc"
+PLAYER_ID = 378
+START_YEAR = 2015  # KP 入行年份
 
-custom_headers = {
-    'Host': 'stats.nba.com',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-    'Accept': 'application/json, text/plain, */*',
-    'Accept-Language': 'en-US,en;q=0.5',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Connection': 'keep-alive',
-    'Referer': 'https://www.nba.com/' # 建議多加一個 Referer 增加真實性
-}
+def update_career_stats():
+    # 自動獲取今年年份 (2026)
+    current_year = datetime.datetime.now().year
+    # 如果現在是 4 月，球季還在 2025-26 (即 API 的 2025 賽季)
+    # 如果是 10 月後，則可能開始抓 2026 賽季
+    latest_season = current_year if datetime.datetime.now().month >= 10 else current_year - 1
+    
+    url = "https://api.balldontlie.io/v1/season_averages"
+    headers = {"Authorization": API_KEY}
+    
+    all_career_data = []
 
-def fetch_with_retry(endpoint_class, max_retries=3, **kwargs):
-    """加入重試機制的 API 請求函式"""
-    for attempt in range(max_retries):
-        try:
-            return endpoint_class(**kwargs)
-        except ReadTimeout:
-            print(f"⚠️ 連線逾時 (嘗試 {attempt + 1}/{max_retries})，等待 5 秒後重試...")
-            time.sleep(5)
-            if attempt == max_retries - 1:
-                raise
+    print(f"🚀 開始抓取 Tingus Pingus 生涯數據 ({START_YEAR} - {latest_season})...")
 
-def update_data():
-    try:
-        print("連線至 NBA 伺服器獲取生涯數據...")
-        career = fetch_with_retry(
-            playercareerstats.PlayerCareerStats, 
-            player_id=PLAYER_ID, 
-            headers=custom_headers, 
-            timeout=30 # 縮短 timeout，提早觸發重試
-        )
-        career_df = career.get_data_frames()[0]
-        career_totals = career.get_data_frames()[1]
-        latest_season = career_df.iloc[-1]
-        
-        print("連線至 NBA 伺服器獲取最近比賽數據...")
-        gamelog = fetch_with_retry(
-            playergamelog.PlayerGameLog, 
-            player_id=PLAYER_ID, 
-            headers=custom_headers, 
-            timeout=30
-        )
-        gamelog_df = gamelog.get_data_frames()[0]
-        latest_game = gamelog_df.iloc[0]
-
-        print("正在整理 Tingus Pingus 數據...")
-        data = {
-            "last_updated": str(datetime.datetime.now()),
-            "recent_game": {
-                "date": latest_game['GAME_DATE'],
-                "matchup": latest_game['MATCHUP'],
-                "pts": int(latest_game['PTS']),
-                "reb": int(latest_game['REB']),
-                "blk": int(latest_game['BLK'])
-            },
-            "season": {
-                "season_year": latest_season['SEASON_ID'],
-                "pts": round(latest_season['PTS'] / latest_season['GP'], 1),
-                "reb": round(latest_season['REB'] / latest_season['GP'], 1),
-                "blk": round(latest_season['BLK'] / latest_season['GP'], 1),
-                "fg3_pct": round(latest_season['FG3_PCT'] * 100, 1)
-            },
-            "career": {
-                "games_played": int(career_totals['GP'].iloc[0]),
-                "pts_avg": round(career_totals['PTS'].iloc[0] / career_totals['GP'].iloc[0], 1),
-                "reb_avg": round(career_totals['REB'].iloc[0] / career_totals['GP'].iloc[0], 1),
-                "blk_avg": round(career_totals['BLK'].iloc[0] / career_totals['GP'].iloc[0], 1),
-                "total_pts": int(career_totals['PTS'].iloc[0])
-            }
+    for year in range(START_YEAR, latest_season + 1):
+        # 2016 年 KP 因為受傷或特殊情況可能沒數據，API 會回傳空值，我們要處理
+        params = {
+            "season": year,
+            "player_ids[]": PLAYER_ID
         }
-
-        print("寫入 data.json...")
-        with open('data.json', 'w') as f:
-            json.dump(data, f, indent=4)
+        
+        try:
+            response = requests.get(url, params=params, headers=headers)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('data'):
+                    stats = data['data'][0]
+                    # 加入年份標記方便辨識
+                    stats['display_season'] = f"{year}-{str(year+1)[2:]}"
+                    all_career_data.append(stats)
+                    print(f"✅ 已獲取 {year} 賽季")
+                else:
+                    print(f"ℹ️ {year} 賽季無數據 (可能因傷缺賽)")
             
-        print("✅ 成功！")
+            # 免費版 API 限制每分鐘請求次數，加個微小延遲保險
+            time.sleep(0.2) 
+            
+        except Exception as e:
+            print(f"❌ 抓取 {year} 出錯: {e}")
 
-    except Exception as e:
-        print(f"❌ 發生錯誤: {e}")
-        raise e
+    # 存檔
+    output = {
+        "last_updated": str(datetime.datetime.now()),
+        "player_id": PLAYER_ID,
+        "career_stats": all_career_data
+    }
+
+    with open('kp_career_full.json', 'w', encoding='utf-8') as f:
+        json.dump(output, f, indent=4, ensure_ascii=False)
+    
+    print(f"\n✨ 全部完成！總共儲存了 {len(all_career_data)} 個賽季的數據到 kp_career_full.json")
 
 if __name__ == "__main__":
-    update_data()
+    update_career_stats()
