@@ -3,157 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kristaps Porzingis Stats</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-        h2 {
-            color: #333;
-            margin-top: 40px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .stat-label {
-            font-size: 12px;
-            opacity: 0.9;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-        .stat-value {
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .games-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-        }
-        .games-table th {
-            background: #667eea;
-            color: white;
-            padding: 12px;
-            text-align: left;
-            font-weight: bold;
-        }
-        .games-table td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-        }
-        .games-table tr:hover {
-            background: #f5f5f5;
-        }
-        .win {
-            color: #4caf50;
-            font-weight: bold;
-        }
-        .loss {
-            color: #f44336;
-            font-weight: bold;
-        }
-        .loading {
-            text-align: center;
-            color: #666;
-            padding: 40px;
-        }
-        .career-milestones {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .milestone-card {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        .milestone-label {
-            font-size: 12px;
-            opacity: 0.9;
-            margin-bottom: 10px;
-        }
-        .milestone-value {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .last-updated {
-            text-align: center;
-            color: #999;
-            font-size: 12px;
-            margin-top: 20px;
-            padding: 10px;
-            background: #f5f5f5;
-            border-radius: 5px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>🏀 Kristaps Porzingis</h1>
-        <p class="subtitle">NBA Statistics Dashboard (Auto-Updated)</p>
-        
-        <!-- Season Stats -->
-        <h2>2024-2025 Season Stats</h2>
-        <div class="stats-grid" id="seasonStats">
-            <div class="loading">Loading stats...</div>
-        </div>
-
-        <!-- Career Milestones -->
-        <h2>Career Milestones</h2>
-        <div class="career-milestones" id="careerStats">
-            <div class="loading">Loading career data...</div>
-        </div>
-
-        <!-- Recent Games -->
-        <h2>Recent Games</h2>
-        <table class="games-table" id="recentGames">
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Who is Tingus Pingus?!</title>
     <style>
         /* Tingus Pingus Knicks/Meme Style */
@@ -203,8 +52,14 @@
             color: #006BB6;
             text-decoration: underline;
         }
-        .unicorn { font-size: 2em; }
+        .stat-line {
+            display: flex;
+            justify-content: space-around;
+            font-weight: bold;
+            margin: 10px 0;
+        }
         .footer { margin-top: 20px; font-size: 0.8em; color: #ddd; }
+        .update-time { font-size: 0.7em; margin-top: 10px; opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -213,52 +68,72 @@
         <div class="quote">"I never heard of Lativia! Who the f*** is this guy?!"</div>
 
         <div class="stats-card">
-            <h2>🔥 Latest Game</h2>
-            <div id="recent-game">Loading unicorn data...</div>
+            <h2>🏆 Current Season Avg (2025-26)</h2>
+            <div id="season-stats">
+                <div class="stat-line">
+                    <div>PTS: <span id="pts">--</span></div>
+                    <div>REB: <span id="reb">--</span></div>
+                    <div>BLK: <span id="blk">--</span></div>
+                </div>
+            </div>
         </div>
 
         <div class="stats-card">
-            <h2>🏆 Current Season Avg</h2>
-            <div id="season-stats">Loading...</div>
+            <h2>🐐 Career Average (Since 2015)</h2>
+            <div id="career-stats">
+                <div class="stat-line">
+                    <div>AVG PTS: <span id="avg-pts">--</span></div>
+                    <div>AVG BLK: <span id="avg-blk">--</span></div>
+                </div>
+            </div>
         </div>
 
-        <div class="stats-card">
-            <h2>🐐 Career Totals & Averages</h2>
-            <div id="career-stats">Loading...</div>
-        </div>
+        <div class="update-time" id="update-time">Loading...</div>
     </div>
 
     <div class="footer">
         Data auto-updates daily. 🇱🇻 The Lativian Unicorn.
     </div>
 
-    <script src="app.js"></script>
-</body>
-</html>estamp(data.lastUpdated);
+    <script>
+        async function loadStats() {
+            try {
+                // 讀取 GitHub Actions 生成的 data.json
+                const response = await fetch('data.json');
+                const data = await response.json();
                 
+                // 1. 處理數據 (career_stats 是 Python 裡定義的 key)
+                const allStats = data.career_stats || data.stats;
+                if (!allStats || allStats.length === 0) throw new Error("No stats found");
+
+                // 2. 獲取最新一季 (列表最後一個)
+                const latest = allStats[allStats.length - 1];
+                
+                // 3. 更新目前賽季顯示
+                document.getElementById('pts').innerText = latest.pts;
+                document.getElementById('reb').innerText = latest.reb;
+                document.getElementById('blk').innerText = latest.blk;
+
+                // 4. 計算生涯平均
+                const totalPts = allStats.reduce((sum, s) => sum + s.pts, 0);
+                const totalBlk = allStats.reduce((sum, s) => sum + s.blk, 0);
+                const avgPts = (totalPts / allStats.length).toFixed(1);
+                const avgBlk = (totalBlk / allStats.length).toFixed(1);
+
+                document.getElementById('avg-pts').innerText = avgPts;
+                document.getElementById('avg-blk').innerText = avgBlk;
+
+                // 5. 更新時間
+                document.getElementById('update-time').innerText = "Last Updated: " + new Date(data.last_updated).toLocaleString();
+
             } catch (error) {
-                console.error('Error loading stats:', error);
-                // 使用預設數據
-                loadFallbackData();
+                console.error('Error:', error);
+                document.getElementById('season-stats').innerHTML = "Failed to load unicorn data. The Knicks drafted him again.";
             }
         }
 
-        function displaySeasonStats(stats) {
-            const container = document.getElementById('seasonStats');
-            container.innerHTML = Object.entries(stats).map(([label, value]) => `
-                <div class="stat-card">
-                    <div class="stat-label">${label}</div>
-                    <div class="stat-value">${value}</div>
-                </div>
-            `).join('');
-        }
-
-        function displayCareerStats(stats) {
-            const container = document.getElementById('careerStats');
-            container.innerHTML = Object.entries(stats).map(([label, value]) => `
-                <div class="milestone-card">
-                    <div class="milestone-label">${label}</div>
-                    <div class="milestone-value">${value}</div>
-                </div>
-            `).join('');
-        }
+        // 啟動
+        window.onload = loadStats;
+    </script>
+</body>
+</html>
