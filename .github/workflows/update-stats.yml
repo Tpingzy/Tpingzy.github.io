@@ -1,0 +1,28 @@
+name: Update Porzingis Stats
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Run fetch script
+        run: node scripts/fetch-stats.js
+
+      - name: Commit if changed
+        run: |
+          git config user.name "bot"
+          git config user.email "bot@github.com"
+          git add -A
+          git commit -m "auto update" || true
+          git push || true
