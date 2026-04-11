@@ -149,35 +149,92 @@
         <!-- Recent Games -->
         <h2>Recent Games</h2>
         <table class="games-table" id="recentGames">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Opponent</th>
-                    <th>Result</th>
-                    <th>Points</th>
-                    <th>Rebounds</th>
-                    <th>Assists</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td colspan="6" style="text-align: center; color: #999;">Loading recent games...</td></tr>
-            </tbody>
-        </table>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Who is Tingus Pingus?!</title>
+    <style>
+        /* Tingus Pingus Knicks/Meme Style */
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #006BB6; /* Knicks Blue */
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #F58426; /* Knicks Orange */
+            border: 5px dashed white;
+            padding: 30px;
+            box-shadow: 10px 10px 0px black;
+        }
+        h1 {
+            font-size: 3em;
+            text-transform: uppercase;
+            text-shadow: 3px 3px black;
+            margin-bottom: 5px;
+        }
+        .quote {
+            font-style: italic;
+            font-size: 1.2em;
+            background: black;
+            color: yellow;
+            padding: 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+            transform: rotate(-2deg);
+        }
+        .stats-card {
+            background: white;
+            color: black;
+            margin: 15px 0;
+            padding: 20px;
+            border: 3px solid black;
+            border-radius: 10px;
+            font-size: 1.2em;
+        }
+        .stats-card h2 {
+            margin-top: 0;
+            color: #006BB6;
+            text-decoration: underline;
+        }
+        .unicorn { font-size: 2em; }
+        .footer { margin-top: 20px; font-size: 0.8em; color: #ddd; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦄 Tingus Pingus Tracker</h1>
+        <div class="quote">"I never heard of Lativia! Who the f*** is this guy?!"</div>
 
-        <div id="updated" class="last-updated">Last updated: Loading...</div>
+        <div class="stats-card">
+            <h2>🔥 Latest Game</h2>
+            <div id="recent-game">Loading unicorn data...</div>
+        </div>
+
+        <div class="stats-card">
+            <h2>🏆 Current Season Avg</h2>
+            <div id="season-stats">Loading...</div>
+        </div>
+
+        <div class="stats-card">
+            <h2>🐐 Career Totals & Averages</h2>
+            <div id="career-stats">Loading...</div>
+        </div>
     </div>
 
-    <script>
-        // 從JSON文件讀取數據
-        async function loadStats() {
-            try {
-                const response = await fetch('./data.json?cache=' + Date.now());
-                const data = await response.json();
-                
-                displaySeasonStats(data.seasonStats);
-                displayCareerStats(data.careerStats);
-                displayRecentGames(data.recentGames);
-                updateTimestamp(data.lastUpdated);
+    <div class="footer">
+        Data auto-updates daily. 🇱🇻 The Lativian Unicorn.
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>estamp(data.lastUpdated);
                 
             } catch (error) {
                 console.error('Error loading stats:', error);
